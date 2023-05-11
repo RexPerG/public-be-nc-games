@@ -1,13 +1,11 @@
 const db = require('../db/connection');
-// const categories = require('../db/data/test-data/categories');
-console.log('in categories.models');
+const endpoints = require('../endpoints.json')
+const fs = require('fs/promises');
 
 function fetchCategories() {
-  console.log('in fetchCategories');  
   return db.query(`SELECT * FROM categories;`)
     .then((result) => {
         const rows = result.rows;
-        console.log(rows, 'in the model; in fetchCategories')
         return rows;
       })
       .catch((error) => {
@@ -16,4 +14,17 @@ function fetchCategories() {
       });
 };
 
-module.exports = { fetchCategories };
+// console.log(JSON.stringify({ endpoints }));
+
+function fetchAPIs(){
+  return fs.readFile(__dirname+'/../endpoints.json', 'utf-8')
+  .then((data) => {
+    // console.log(data);
+    return JSON.parse(data);
+  })
+  .catch((err) => {
+    throw err;
+  })
+}
+
+module.exports = { fetchCategories, fetchAPIs };
