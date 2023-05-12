@@ -62,7 +62,7 @@ describe('GET /api/review/:review_id test suite', () => {
   });
   test('should respond with a 400 bad request if an invalid endpoint is provided', () => {
     return request(app)
-    .get('/api/reviews/invalidEndpoint')
+    .get('/api/reviews/invalidId')
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe('Bad request')
