@@ -1,5 +1,5 @@
 const { response } = require('../app')
-const { fetchReviewById } = require('../models/reviews.models')
+const { fetchReviewById, fetchReviews } = require('../models/reviews.models')
 
 exports.getReviewById = (request, response, next) => {
     const { review_id } = request.params;
@@ -10,4 +10,14 @@ exports.getReviewById = (request, response, next) => {
     .catch((err) => {
         next(err);
     });
+}
+
+exports.getReviews = (request, response, next) => {
+    fetchReviews()
+        .then((reviews) => {
+            response.status(200).send({ reviews});
+        })
+        .catch((err) => {
+            next(err)
+        })
 }
