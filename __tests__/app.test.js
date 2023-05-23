@@ -4,6 +4,7 @@ const app = require('../app');
 const db = require('../db/connection');
 const seed = require('../db/seeds/seed');
 const endpoint = require('../endpoints.json');
+require('jest-sorted');
 
 beforeEach(() => {
   return seed(testData);
@@ -81,7 +82,7 @@ describe('GET /api/review/:review_id Test Suite', () => {
 });
 
 describe('GET /api/reviews test suite', () => {
-  xtest('GET /api/reviews responds with an array of review objects', () => {
+  test('GET /api/reviews responds with an array of review objects', () => {
     return request(app)
       .get('/api/reviews')
       .then((response) => {
@@ -103,6 +104,22 @@ describe('GET /api/reviews test suite', () => {
         });
       });
   });
-  xtest('GET /api/reviews responds with an accurate comment count', () => {});
-  xtest('GET /api/reviews responds with the array of review objects sorted by date order', () => {});
+  test('GET /api/reviews responds with the array of review objects sorted by date order', () => {
+    return request(app)
+      .get('/api/reviews')
+      .then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(response.body.reviews).toBeSortedBy('created_at', {
+          descending: true,
+        });
+      });
+  });
 });
+
+// xdescribe('GET /api/reviews/:review_id/comments test suite', () => {
+//   return request(app)
+//   .get('/api/reviews/1/comments')
+//   .then((response) => {
+//     expect
+//   })
+// });
