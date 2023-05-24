@@ -116,10 +116,69 @@ describe('GET /api/reviews test suite', () => {
   });
 });
 
-// xdescribe('GET /api/reviews/:review_id/comments test suite', () => {
-//   return request(app)
-//   .get('/api/reviews/1/comments')
-//   .then((response) => {
-//     expect
-//   })
-// });
+xdescribe('GET /api/reviews/:review_id/comments test suite', () => {
+  test('GET /api/review/1/comments should return status 200 and an empty array of comments for valid ID', () => {
+    return request(app)
+      .get('/api/reviews/1/comments')
+      .then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body).toBe(true));
+        expect(response.body.length).toBe(0);
+      });
+  });
+  test('GET /api/review/2/comments should return status 200 and a comment object, sorted by created_at date, for the specified review', () => {
+    return request(app)
+      .get('/api/reviews/2/comments')
+      .then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body).toBe(true));
+        expect(response.body.comments).toBeSortedBy('created_at', { 
+          descending: true,
+        });
+        expect(comment).toEqual(
+          expect.arrayContaining([
+            {
+              comment_id: expect.any(Number),
+              body: 'I loved this game too!',
+              votes: 16,
+              author: 'bainesface',
+              review_id: 2,
+              created_at: new Date(1511354613389),
+            },
+            {
+              comment_id: expect.any(Number),
+              body: 'EPIC board game!',
+              votes: 16,
+              author: 'bainesface',
+              review_id: 2,
+              created_at: new Date(1511354163389),
+            },
+            {
+              comment_id: expect.any(Number),
+              body: 'Now this is a story all about how, board games turned my life upside down',
+              votes: 13,
+              author: 'mallionaire',
+              review_id: 2,
+              created_at: new Date(1610965445410),
+            },
+          ])
+        );
+      });
+  });
+  test('GET /api/reviews/not-an-id/comments', () => {
+    return request(app)
+      .get('/api/reviews/not-an-id/comments')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test('GET /api/reviews/999999/comments', () => {
+    return request(app)
+      .get('/api/reviews/999999/comments')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Not found');
+      });
+  });
+});
