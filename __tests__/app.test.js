@@ -123,7 +123,7 @@ xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
       .then((response) => {
         expect(response.statusCode).toBe(200);
         expect(Array.isArray(response.body).toBe(true));
-        expect(response.body.length).toBe(0);
+        expect(response.body.comments.length).toBe(0);
       });
   });
   test('GET /api/review/2/comments should return status 200 and a comment object, sorted by created_at date, for the specified review', () => {
@@ -132,37 +132,22 @@ xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
       .then((response) => {
         expect(response.statusCode).toBe(200);
         expect(Array.isArray(response.body).toBe(true));
-        expect(response.body.comments).toBeSortedBy('created_at', { 
+        expect(response.body.comments).toBeSortedBy('created_at', {
           descending: true,
         });
-        expect(comment).toEqual(
-          expect.arrayContaining([
-            {
+        expect(response.body.comments.length).toBe(3);
+        response.body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
               comment_id: expect.any(Number),
-              body: 'I loved this game too!',
-              votes: 16,
-              author: 'bainesface',
-              review_id: 2,
-              created_at: new Date(1511354613389),
-            },
-            {
-              comment_id: expect.any(Number),
-              body: 'EPIC board game!',
-              votes: 16,
-              author: 'bainesface',
-              review_id: 2,
-              created_at: new Date(1511354163389),
-            },
-            {
-              comment_id: expect.any(Number),
-              body: 'Now this is a story all about how, board games turned my life upside down',
-              votes: 13,
-              author: 'mallionaire',
-              review_id: 2,
-              created_at: new Date(1610965445410),
-            },
-          ])
-        );
+              body: expect.any(String),
+              votes: expect.any(Number),
+              author: expect.any(String),
+              review_id: expect.any(Number),
+              created_at: expect.any(String),
+            })
+          );
+        });
       });
   });
   test('GET /api/reviews/not-an-id/comments', () => {
@@ -184,14 +169,22 @@ xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
 });
 
 xdescribe('TASK 7 POST /api/reviews/:review_id/comments', () => {
-  // Status 201, created comment object
-  // Status 201, ignores unnecessary properties
-  // Status 400, invalid ID, e.g. string of "not-an-id"
-  // Status 404, non existent ID, e.g. 0 or 9999
-  // Status 400, missing required field(s), e.g. no username or body properties
-  // Status 404, username does not exist
+  test('POST /api/reviews/:review_id/comments should return a 201 for created comments', () => {
+    const newComment = { username: 'mallionaire', body: 'Awesome!!'}
+    return request(app)
+      .post('/api/reviews/3/comments').send(newComment)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.comment).toEqual(newComment)
+        // Status 201, created comment object
+        // Status 201, ignores unnecessary properties
+        // Status 400, invalid ID, e.g. string of "not-an-id"
+        // Status 404, non existent ID, e.g. 0 or 9999
+        // Status 400, missing required field(s), e.g. no username or body properties
+        // Status 404, username does not exist
+      });
+  });
 });
-
 xdescribe('TASK 8 PATCH /api/reviews/:review_id', () => {
   // Status 200, updated single review object.
   // Status 400, invalid ID, e.g. string of "not-an-id"
@@ -199,7 +192,4 @@ xdescribe('TASK 8 PATCH /api/reviews/:review_id', () => {
   // Status 400, incorrect body, e.g. inc_votes property is not a number
 });
 
-xdescribe('TASK 9 DELETE /api/comments/:comment_id', () => {
-
-});
-
+xdescribe('TASK 9 DELETE /api/comments/:comment_id', () => {});
