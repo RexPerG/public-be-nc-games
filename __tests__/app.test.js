@@ -14,7 +14,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe('GET /api/categories Test Suite', () => {
+describe('TASK 3 GET /api/categories Test Suite', () => {
   test('GET /api/categories responds with an array of category objects', () => {
     return request(app)
       .get('/api/categories')
@@ -28,7 +28,7 @@ describe('GET /api/categories Test Suite', () => {
   });
 });
 
-describe('GET /api Test Suite', () => {
+describe('TASK 3.5 GET /api Test Suite', () => {
   test('GET /api responds with JSON describing all the available API endpoints', () => {
     return request(app)
       .get('/api')
@@ -41,7 +41,7 @@ describe('GET /api Test Suite', () => {
   });
 });
 
-describe('GET /api/review/:review_id Test Suite', () => {
+describe('TASK 4 GET /api/review/:review_id Test Suite', () => {
   test('should respond with a review object with the required properties', () => {
     return request(app)
       .get('/api/reviews/1')
@@ -81,7 +81,7 @@ describe('GET /api/review/:review_id Test Suite', () => {
   });
 });
 
-describe('GET /api/reviews test suite', () => {
+describe('TASK 5 GET /api/reviews test suite', () => {
   test('GET /api/reviews responds with an array of review objects', () => {
     return request(app)
       .get('/api/reviews')
@@ -116,7 +116,7 @@ describe('GET /api/reviews test suite', () => {
   });
 });
 
-xdescribe('GET /api/reviews/:review_id/comments test suite', () => {
+xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
   test('GET /api/review/1/comments should return status 200 and an empty array of comments for valid ID', () => {
     return request(app)
       .get('/api/reviews/1/comments')
@@ -182,3 +182,24 @@ xdescribe('GET /api/reviews/:review_id/comments test suite', () => {
       });
   });
 });
+
+xdescribe('TASK 7 POST /api/reviews/:review_id/comments', () => {
+  // Status 201, created comment object
+  // Status 201, ignores unnecessary properties
+  // Status 400, invalid ID, e.g. string of "not-an-id"
+  // Status 404, non existent ID, e.g. 0 or 9999
+  // Status 400, missing required field(s), e.g. no username or body properties
+  // Status 404, username does not exist
+});
+
+xdescribe('TASK 8 PATCH /api/reviews/:review_id', () => {
+  // Status 200, updated single review object.
+  // Status 400, invalid ID, e.g. string of "not-an-id"
+  // Status 404, non existent ID, e.g. 0 or 9999
+  // Status 400, incorrect body, e.g. inc_votes property is not a number
+});
+
+xdescribe('TASK 9 DELETE /api/comments/:comment_id', () => {
+
+});
+
