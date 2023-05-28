@@ -116,14 +116,15 @@ describe('TASK 5 GET /api/reviews test suite', () => {
   });
 });
 
-xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
-  test('GET /api/review/1/comments should return status 200 and an empty array of comments for valid ID', () => {
+describe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
+  test('GET /api/review/11/comments should return status 200 and an empty array of comments for valid ID with no comments', () => {
     return request(app)
-      .get('/api/reviews/1/comments')
+      .get('/api/reviews/11/comments')
       .then((response) => {
         expect(response.statusCode).toBe(200);
-        expect(Array.isArray(response.body).toBe(true));
-        expect(response.body.comments.length).toBe(0);
+        expect(Array.isArray(response.body)).toBe(true);
+        console.log('test line 126', response.body);
+        expect(response.body.length).toBe(0);
       });
   });
   test('GET /api/review/2/comments should return status 200 and a comment object, sorted by created_at date, for the specified review', () => {
@@ -131,12 +132,12 @@ xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
       .get('/api/reviews/2/comments')
       .then((response) => {
         expect(response.statusCode).toBe(200);
-        expect(Array.isArray(response.body).toBe(true));
-        expect(response.body.comments).toBeSortedBy('created_at', {
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body).toBeSortedBy('created_at', {
           descending: true,
         });
-        expect(response.body.comments.length).toBe(3);
-        response.body.comments.forEach((comment) => {
+        expect(response.body.length).toBe(3);
+        response.body.forEach((comment) => {
           expect(comment).toEqual(
             expect.objectContaining({
               comment_id: expect.any(Number),
@@ -150,7 +151,7 @@ xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
         });
       });
   });
-  test('GET /api/reviews/not-an-id/comments', () => {
+  test('GET /api/reviews/not-an-id/comments should return a 400 bad request when provided with an invalid id', () => {
     return request(app)
       .get('/api/reviews/not-an-id/comments')
       .expect(400)
@@ -158,7 +159,7 @@ xdescribe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
         expect(body.msg).toBe('Bad request');
       });
   });
-  test('GET /api/reviews/999999/comments', () => {
+  test('GET /api/reviews/999999/comments should provide a 404 not found when provided with a valid id that does not exist', () => {
     return request(app)
       .get('/api/reviews/999999/comments')
       .expect(404)

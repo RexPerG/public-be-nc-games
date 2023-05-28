@@ -18,11 +18,39 @@ exports.fetchReviews = () => {
     )
     .then((result) => {
       const rows = result.rows;
-      console.log(rows);
       return rows;
     })
     .catch((error) => {
       console.error('Error fetching reviews:', error);
       throw error;
+    });
+};
+
+exports.fetchReviewIdComments = (review_id) => {
+  console.log('model line 30', review_id);
+  return db
+    .query(
+      `SELECT * FROM comments WHERE review_id = $1 ORDER BY comments.created_at DESC;`,
+      [review_id]
+    )
+    .then((result) => {
+      console.log('model row 34 result', result);
+      const rows = result.rows;
+      console.log('model line 36 result.rows', result.rows);
+      return rows;
+    })
+    .catch((error) => {
+      console.error('Error fetching reviews:', error);
+      throw error;
+    });
+};
+
+exports.checkReviewIdExists = (review_id) => {
+  return db
+    .query('SELECT EXISTS(SELECT 1 FROM reviews WHERE review_id = $1)', [
+      review_id,
+    ])
+    .then((result) => {
+      return result.rows[0].exists;
     });
 };
