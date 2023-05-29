@@ -169,22 +169,65 @@ describe('TASK 6 GET /api/reviews/:review_id/comments test suite', () => {
   });
 });
 
-xdescribe('TASK 7 POST /api/reviews/:review_id/comments', () => {
+describe('TASK 7 POST /api/reviews/:review_id/comments', () => {
   test('POST /api/reviews/:review_id/comments should return a 201 for created comments', () => {
-    const newComment = { username: 'mallionaire', body: 'Awesome!!'}
+    const newComment = { username: 'mallionaire', body: 'Awesome!!' };
     return request(app)
-      .post('/api/reviews/3/comments').send(newComment)
+      .post('/api/reviews/3/comments')
+      .send(newComment)
       .expect(201)
       .then((response) => {
-        expect(response.body.comment).toEqual(newComment)
-        // Status 201, created comment object
-        // Status 201, ignores unnecessary properties
-        // Status 400, invalid ID, e.g. string of "not-an-id"
-        // Status 404, non existent ID, e.g. 0 or 9999
-        // Status 400, missing required field(s), e.g. no username or body properties
-        // Status 404, username does not exist
+        expect(response.body.comment).toEqual({ review_id: 3, author: 'mallionaire', body: 'Awesome!!' });
       });
   });
+
+  test('POST /api/reviews/:review_id/comments should ignore unnecessary properties', () => {
+    const newComment = {
+      username: 'mallionaire',
+      body: 'Awesome!!',
+      unnecessaryProp: 'This should be ignored',
+    };
+    return request(app)
+      .post('/api/reviews/3/comments')
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.comment).toEqual({ review_id: 3, author: 'mallionaire', body: 'Awesome!!' });
+      });
+  });
+
+  test('POST /api/reviews/:review_id/comments should return 404 for non-existent username', () => {
+    const newComment = { username: 'nonexistent', body: 'Awesome!!' };
+    return request(app)
+      .post('/api/reviews/3/comments')
+      .send(newComment)
+      .expect(404);
+  });
+
+  test('POST /api/reviews/:review_id/comments should return 400 for invalid ID', () => {
+    const newComment = { username: 'tickle122', body: 'Awesome!!' };
+    return request(app)
+      .post('/api/reviews/not-an-id/comments')
+      .send(newComment)
+      .expect(400);
+  });
+
+  test('POST /api/reviews/:review_id/comments should return 404 for non-existent ID', () => {
+    const newComment = { username: 'tickle122', body: 'Awesome!!' };
+    return request(app)
+      .post('/api/reviews/9999/comments')
+      .send(newComment)
+      .expect(404);
+  });
+
+  test('POST /api/reviews/:review_id/comments should return 400 for missing required fields', () => {
+    const newComment = { username: 'tickle122' }; // Missing "body" field
+    return request(app)
+      .post('/api/reviews/3/comments')
+      .send(newComment)
+      .expect(400);
+  });
+
 });
 xdescribe('TASK 8 PATCH /api/reviews/:review_id', () => {
   // Status 200, updated single review object.

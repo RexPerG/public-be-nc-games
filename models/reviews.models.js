@@ -1,3 +1,4 @@
+const { use } = require('../app');
 const db = require('../db/connection');
 
 exports.fetchReviewById = (review_id) => {
@@ -46,11 +47,41 @@ exports.fetchReviewIdComments = (review_id) => {
 };
 
 exports.checkReviewIdExists = (review_id) => {
+  console.log('model line 50 review_id:', review_id);
   return db
     .query('SELECT EXISTS(SELECT 1 FROM reviews WHERE review_id = $1)', [
       review_id,
     ])
     .then((result) => {
-      return result.rows[0].exists;
+      return result.rows[0].exists; //or return results.rows.length > 0
+    });
+};
+
+exports.checkUserExists = (username) => {
+  console.log('model line 61 username:', username)
+  return db
+    .query('SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);', [
+      username,
+    ])
+    .then((result) => {
+      console.log('model line 67 result.rows[0]:', result.rows[0])
+      return result.rows[0].exists; //or return results.rows.length > 0
+    });
+};
+
+exports.addReviewIdComments = (review_id, username, body) => {
+  console.log('model line 71:', review_id)
+  console.log('model line 72:', username)
+  console.log('model line 73:', body)
+  return db
+    .query(
+      `INSERT INTO comments (review_id, author, body)
+  VALUES ($1, $2, $3)
+  RETURNING review_id, author, body;`, //or RETURNING *;
+      [review_id, username, body]
+    )
+    .then((result) => {
+      console.log('model line 67 db.query result:', result.rows[0]);
+      return result.rows[0];
     });
 };
